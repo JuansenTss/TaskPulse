@@ -15,15 +15,12 @@ interface Filters {
   createdDate: string;
   completionDate: string;
   notes: string;
+  action: string;
   rawCreatedDate: string;
   rawCompletionDate: string;
 }
 
-const formatDateForFilter = (dateStr: string) => {
-  if (!dateStr) return '';
-  const date = new Date(dateStr);
-  return date.toISOString().split('T')[0];
-};
+// removed unused helper
 
 const matchesDateFilter = (taskDate: string, filterDate: string) => {
   if (!filterDate) return true;
@@ -58,6 +55,7 @@ export default function TaskList({ tasks, onUpdate, onDelete }: Props) {
     createdDate: '',
     completionDate: '',
     notes: '',
+    action: '',
     rawCreatedDate: '',
     rawCompletionDate: ''
   });
@@ -70,6 +68,7 @@ export default function TaskList({ tasks, onUpdate, onDelete }: Props) {
       createdDate: '',
       completionDate: '',
       notes: '',
+      action: '',
       rawCreatedDate: '',
       rawCompletionDate: ''
     });
@@ -89,8 +88,9 @@ export default function TaskList({ tasks, onUpdate, onDelete }: Props) {
         const matchCreatedDate = !filters.createdDate || matchesDateFilter(task.timestamp, filters.createdDate);
         const matchCompletionDate = !filters.completionDate || (task.doneDate && matchesDateFilter(task.doneDate, filters.completionDate));
         const matchNotes = task.notes ? task.notes.toLowerCase().includes(filters.notes.toLowerCase()) : !filters.notes;
+        const matchAction = !filters.action || filters.action === 'Delete';
 
-        return matchNumber && matchTitle && matchStatus && matchCreatedDate && matchCompletionDate && matchNotes;
+        return matchNumber && matchTitle && matchStatus && matchCreatedDate && matchCompletionDate && matchNotes && matchAction;
       });
   }, [tasks, filters]);
 
@@ -205,7 +205,7 @@ export default function TaskList({ tasks, onUpdate, onDelete }: Props) {
                     }));
                   }}
                   className="column-filter date-filter"
-                  onKeyDown={(e) => {
+                  onKeyDown={() => {
                     setFilters(prev => ({
                       ...prev,
                       rawCreatedDate: 'pending'
@@ -239,7 +239,7 @@ export default function TaskList({ tasks, onUpdate, onDelete }: Props) {
                     }));
                   }}
                   className="column-filter date-filter"
-                  onKeyDown={(e) => {
+                  onKeyDown={() => {
                     setFilters(prev => ({
                       ...prev,
                       rawCompletionDate: 'pending'
@@ -274,6 +274,21 @@ export default function TaskList({ tasks, onUpdate, onDelete }: Props) {
                     onClick={() => setFilters(prev => ({ ...prev, notes: '' }))}
                     title="Clear filter"
                   >×</button>
+                )}
+              </div>
+            </th>
+            <th>
+              <div className="filter-container">
+                <select
+                  className="column-filter"
+                  value={filters.action}
+                  onChange={(e) => setFilters(prev => ({ ...prev, action: e.target.value }))}
+                >
+                  <option value=""></option>
+                  <option value="Delete">Delete</option>
+                </select>
+                {filters.action === '' && (
+                  <span className="select-overlay-placeholder">Filter action...</span>
                 )}
               </div>
             </th>

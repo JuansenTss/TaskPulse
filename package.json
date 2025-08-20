@@ -2,7 +2,6 @@
   "name": "taskpulse",
   "private": true,
   "version": "0.0.0",
-
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -12,13 +11,17 @@
     "server": "npm run build-server && node dist/server.js"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@eslint/js": "^9.33.0",
+    "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/react": "^19.1.10",

@@ -1,19 +1,32 @@
 import { useState, useEffect } from 'react';
-import type { TaskEntry } from './types/task';
+import type { TaskEntry, User } from './types/task';
 import { loadTasks, saveTask, updateTask as updateTaskInStorage, deleteTask as deleteTaskFromStorage } from './utils/storage';
 import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
+import Login from './components/Login';
+import { getCurrentUser, logout } from './utils/auth';
 
 export default function App() {
   const [tasks, setTasks] = useState<TaskEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    loadTasks()
-      .then(setTasks)
-      .catch(err => setError('Failed to load tasks'))
-      .finally(() => setLoading(false));
+    (async () => {
+      try {
+        const me = await getCurrentUser();
+        setUser(me);
+        if (me) {
+          const t = await loadTasks();
+          setTasks(t);
+        }
+      } catch (err) {
+        // ignore
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
   const addTask = async (task: TaskEntry) => {
@@ -55,8 +68,43 @@ export default function App() {
     pendingClarification: tasks.filter(t => t.status === 'Pending Clarification').length,
   };
 
+  if (!user) {
+    return (
+      <div className="login-page">
+        {loading ? <div className="loading">Loading...</div> : (
+          <Login onLoggedIn={async () => {
+            setLoading(true);
+            const me = await getCurrentUser();
+            setUser(me);
+            const t = await loadTasks();
+            setTasks(t);
+            setLoading(false);
+          }} />
+        )}
+      </div>
+    );
+  }
+
   return (
-    <div className="app-layout">
+    <>
+      <header className="app-header">
+        <div className="app-header-inner">
+          <h1 className="app-title">
+            <img src="/src/assets/taskpulse-logo.svg" alt="TaskPulse Logo" className="app-logo" />
+            Task Pulse
+          </h1>
+          <div className="app-header-right">
+            <span style={{ marginRight: 8 }}>Signed in as <strong style={{ fontSize: '1.1em' }}>{user.username}</strong></span>
+            <button onClick={async () => {
+              await logout();
+              setUser(null);
+              setTasks([]);
+            }}>Sign out</button>
+          </div>
+        </div>
+      </header>
+      <div className="app-layout">
+      <>
       <aside className="sidebar left-sidebar">
         <h2 className="sidebar-title">Task Statistics</h2>
         <div className="stats-list">
@@ -104,10 +152,6 @@ export default function App() {
       </aside>
 
       <main>
-        <h1 className="app-title">
-          <img src="/src/assets/taskpulse-logo.svg" alt="TaskPulse Logo" className="app-logo" />
-          Task Pulse
-        </h1>
         {error && <div className="error-message">{error}</div>}
         <TaskForm onAdd={addTask} />
         {loading ? (
@@ -134,6 +178,8 @@ export default function App() {
           ))}
         </div>
       </aside>
-    </div>
+      </>
+      </div>
+    </>
   );
 }

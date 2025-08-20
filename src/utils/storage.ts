@@ -1,9 +1,8 @@
 import type { TaskEntry } from '../types/task';
-
-const API_URL = '/api';
+import { API_BASE } from './api';
 
 export const loadTasks = async (): Promise<TaskEntry[]> => {
-  const response = await fetch(`${API_URL}/tasks`);
+  const response = await fetch(`${API_BASE}/tasks`, { credentials: 'include' });
   if (!response.ok) throw new Error('Failed to load tasks');
   const tasks: TaskEntry[] = await response.json();
   
@@ -24,28 +23,31 @@ export const loadTasks = async (): Promise<TaskEntry[]> => {
 };
 
 export const saveTask = async (task: TaskEntry): Promise<TaskEntry> => {
-  const response = await fetch(`${API_URL}/tasks`, {
+  const response = await fetch(`${API_BASE}/tasks`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(task),
+    credentials: 'include'
   });
   if (!response.ok) throw new Error('Failed to save task');
   return response.json();
 };
 
 export const updateTask = async (task: TaskEntry): Promise<TaskEntry> => {
-  const response = await fetch(`${API_URL}/tasks/${task.id}`, {
+  const response = await fetch(`${API_BASE}/tasks/${task.id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(task),
+    credentials: 'include'
   });
   if (!response.ok) throw new Error('Failed to update task');
   return response.json();
 };
 
 export const deleteTask = async (taskId: string): Promise<void> => {
-  const response = await fetch(`${API_URL}/tasks/${taskId}`, {
+  const response = await fetch(`${API_BASE}/tasks/${taskId}`, {
     method: 'DELETE',
+    credentials: 'include'
   });
   if (!response.ok) throw new Error('Failed to delete task');
 };

@@ -13,3 +13,7 @@ export interface TaskEntry {
   priority?: 'Low' | 'Medium' | 'High';
   tags?: string[];
 }
+
+export interface User {
+  username: string;
+}

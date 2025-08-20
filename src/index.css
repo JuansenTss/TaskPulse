@@ -28,13 +28,150 @@ body {
   min-height: 100vh;
 }
 
+.app-header {
+  width: 100%;
+  padding: 2rem 2rem 0.5rem 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.app-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Center the login page content */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  transform: translateY(-5vh);
+}
+
+/* Full-viewport centering wrapper to prevent grid styles from affecting login */
+.login-page {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* uniform vertical rhythm for form elements */
+  min-width: 320px;
+  max-width: 360px;
+}
+
+.login-form .form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.otp-page .login-form {
+  max-width: 340px;
+}
+
+.login-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* smaller gap between button and link text */
+}
+
+.login-actions .hint {
+  font-size: 0.9rem;
+}
+
+.login-actions .hint a {
+  color: #646cff;
+  text-decoration: none;
+}
+.login-actions .hint a:hover {
+  text-decoration: underline;
+}
+
+.hint-dual {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* sends forgot password to far right */
+  gap: 0.5rem;
+}
+/* Simple toast styles */
+.toast {
+  background: #1a1a1a;
+  color: white;
+  border: 1px solid #333;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+
+/* Password strength meter */
+.strength-meter {
+  height: 6px;
+  border-radius: 4px;
+  background: #e5e5e5;
+  overflow: hidden;
+}
+.strength-meter > div {
+  height: 100%;
+  transition: width 0.2s ease;
+}
+
+.hint-dual .forgot-link {
+  margin-left: auto;
+}
+
+.login-form input[type="text"],
+.login-form input[type="password"] {
+  padding: 0.6em 0.8em;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+  background: #ffffff;
+  color: #213547; /* ensure contrast on white background */
+  caret-color: #213547;
+  width: 100%;
+  height: 40px;
+  box-sizing: border-box;
+}
+
+.login-form input::placeholder {
+  color: #6b7280;
+  opacity: 1;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: #646cff;
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.1);
+}
+
+.login-form .hint {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
 .app-layout {
   display: grid;
   grid-template-columns: 250px 1fr 250px;
   gap: 2.5rem;
   max-width: 1600px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0 2rem 2rem 2rem; /* remove top padding so columns align under header */
+}
+
+main {
+  display: flex;
+  flex-direction: column;
 }
 
 main {
@@ -52,7 +189,7 @@ main {
 .sidebar-title {
   font-size: 1.2em;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin: 0 0 1rem 0;
   color: #213547;
 }
 
@@ -173,6 +310,8 @@ main {
   align-items: center;
 }
 
+/* removed floating label for action filter */
+
 .column-filter {
   width: 100%;
   padding: 6px 8px;
@@ -180,6 +319,33 @@ main {
   border-radius: 4px;
   font-size: 0.9em;
   background-color: white;
+  height: 34px; /* keep all filter inputs same height */
+  line-height: 20px;
+  box-sizing: border-box;
+}
+
+select.column-filter {
+  height: 34px;
+  line-height: 20px;
+}
+
+/* Make placeholder-like option in selects appear dimmed */
+.select-placeholder {
+  color: #666;
+}
+
+.select-overlay-placeholder {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #666;
+  font-size: 0.9em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 24px);
 }
 
 .column-filter:focus {
@@ -246,7 +412,24 @@ main {
   font-family: inherit;
   color: inherit;
   cursor: pointer;
+  height: 34px; /* match text inputs */
+  line-height: 20px;
 }
+
+/* Normalize date input internals to avoid extra vertical space */
+.date-filter::-webkit-datetime-edit { padding: 0; }
+.date-filter::-webkit-inner-spin-button { display: none; }
+.date-filter::-webkit-calendar-picker-indicator { margin: 0; }
+
+/* Make date filter placeholder look like other placeholders */
+.date-filter::-webkit-datetime-edit-field,
+.date-filter::-webkit-datetime-edit-text,
+.date-filter::-webkit-datetime-edit-year-field,
+.date-filter::-webkit-datetime-edit-month-field,
+.date-filter::-webkit-datetime-edit-day-field {
+  color: #666; /* matches other placeholder tone */
+}
+.date-filter:placeholder-shown { color: #666; }
 
 .date-filter::-webkit-calendar-picker-indicator {
   cursor: pointer;
@@ -337,6 +520,11 @@ main {
   padding: 1rem;
   border-radius: 8px;
   margin: 1rem 0;
+}
+
+/* Inside the login form, rely on gap for spacing so it's consistent */
+.login-form .error-message {
+  margin: 0;
 }
 
 .status-cell {
@@ -443,7 +631,7 @@ main {
 .task-form {
   display: flex;
   gap: 1rem;
-  margin-top: 2rem;
+  margin-top: 0;
 }
 
 .task-input {
@@ -607,6 +795,15 @@ button:focus-visible {
     color: rgba(255, 255, 255, 0.87);
     background-color: #242424;
   }
+  /* Keep login inputs high-contrast in dark mode */
+  .login-form input[type="text"],
+  .login-form input[type="password"] {
+    background: #ffffff;
+    color: #213547;
+    border-color: #e5e5e5;
+    caret-color: #213547;
+  }
+
   
   .sidebar {
     top: 0;
