@@ -15,7 +15,7 @@ const initDemoUsers = () => {
   }
 };
 
-export async function login(username: string, password: string, rememberMe?: boolean): Promise<User> {
+export async function login(username: string, password: string, _rememberMe?: boolean): Promise<User> {
   initDemoUsers();
 
   const stored = localStorage.getItem(USERS_STORAGE_KEY);
@@ -24,7 +24,7 @@ export async function login(username: string, password: string, rememberMe?: boo
   const user = users.find((u: any) => u.username === username && u.password === password);
   if (!user) throw new Error('Invalid credentials');
 
-  const currentUser: User = { username: user.username, email: user.email };
+  const currentUser: User = { username: user.username };
   localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(currentUser));
   return currentUser;
 }
@@ -37,7 +37,7 @@ export async function getCurrentUser(): Promise<User | null> {
   const stored = localStorage.getItem(USER_STORAGE_KEY);
   if (!stored) {
     // Auto-login as demo user for demo purposes
-    const demoUser: User = { username: 'demo', email: 'demo@taskpulse.com' };
+    const demoUser: User = { username: 'demo' };
     localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(demoUser));
     return demoUser;
   }
@@ -58,7 +58,7 @@ export async function signup(username: string, password: string, email?: string)
   users.push(newUser);
   localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
 
-  const currentUser: User = { username, email };
+  const currentUser: User = { username };
   localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(currentUser));
   return currentUser;
 }
