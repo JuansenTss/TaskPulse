@@ -1,53 +1,51 @@
 import type { TaskEntry } from '../types/task';
-import { API_BASE } from './api';
+
+// Demo mode: Use localStorage instead of API
+const TASKS_STORAGE_KEY = 'taskpulse_demo_tasks';
 
 export const loadTasks = async (): Promise<TaskEntry[]> => {
-  const response = await fetch(`${API_BASE}/tasks`, { credentials: 'include' });
-  if (!response.ok) throw new Error('Failed to load tasks');
-  const tasks: TaskEntry[] = await response.json();
-  
+  const stored = localStorage.getItem(TASKS_STORAGE_KEY);
+  if (!stored) return [];
+
+  const tasks: TaskEntry[] = JSON.parse(stored);
+
   // Migrate existing completed tasks to have a doneDate
-  const updatedTasks = tasks.map(async (task) => {
+  const updatedTasks = tasks.map((task) => {
     if (task.status === 'Completed' && !task.doneDate) {
-      const updatedTask = {
+      return {
         ...task,
-        doneDate: task.timestamp // Use the creation date as done date for old tasks
+        doneDate: task.timestamp
       };
-      await updateTask(updatedTask);
-      return updatedTask;
     }
     return task;
   });
 
-  return Promise.all(updatedTasks);
+  if (JSON.stringify(tasks) !== JSON.stringify(updatedTasks)) {
+    localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(updatedTasks));
+  }
+
+  return updatedTasks;
 };
 
 export const saveTask = async (task: TaskEntry): Promise<TaskEntry> => {
-  const response = await fetch(`${API_BASE}/tasks`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(task),
-    credentials: 'include'
-  });
-  if (!response.ok) throw new Error('Failed to save task');
-  return response.json();
+  const tasks = await loadTasks();
+  const newTask = { ...task, id: task.id || crypto.randomUUID() };
+  tasks.push(newTask);
+  localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+  return newTask;
 };
 
 export const updateTask = async (task: TaskEntry): Promise<TaskEntry> => {
-  const response = await fetch(`${API_BASE}/tasks/${task.id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(task),
-    credentials: 'include'
-  });
-  if (!response.ok) throw new Error('Failed to update task');
-  return response.json();
+  const tasks = await loadTasks();
+  const index = tasks.findIndex(t => t.id === task.id);
+  if (index === -1) throw new Error('Task not found');
+  tasks[index] = task;
+  localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+  return task;
 };
 
 export const deleteTask = async (taskId: string): Promise<void> => {
-  const response = await fetch(`${API_BASE}/tasks/${taskId}`, {
-    method: 'DELETE',
-    credentials: 'include'
-  });
-  if (!response.ok) throw new Error('Failed to delete task');
+  const tasks = await loadTasks();
+  const filtered = tasks.filter(t => t.id !== taskId);
+  localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(filtered));
 };

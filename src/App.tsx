@@ -90,8 +90,8 @@ export default function App() {
       <header className="app-header">
         <div className="app-header-inner">
           <h1 className="app-title">
-            <img src="/src/assets/taskpulse-logo.svg" alt="TaskPulse Logo" className="app-logo" />
-            Task Pulse
+            <span className="app-logo">📋</span>
+            Task Pulse <span style={{ fontSize: '0.5em', color: '#666' }}>(Demo)</span>
           </h1>
           <div className="app-header-right">
             <span style={{ marginRight: 8 }}>Signed in as <strong style={{ fontSize: '1.1em' }}>{user.username}</strong></span>
