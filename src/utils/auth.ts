@@ -15,13 +15,13 @@ const initDemoUsers = () => {
   }
 };
 
-export async function login(username: string, password: string, _rememberMe?: boolean): Promise<User> {
+export async function login(username: string, password: string): Promise<User> {
   initDemoUsers();
 
   const stored = localStorage.getItem(USERS_STORAGE_KEY);
   const users = stored ? JSON.parse(stored) : [];
 
-  const user = users.find((u: any) => u.username === username && u.password === password);
+  const user = users.find((u: { username: string; password: string }) => u.username === username && u.password === password);
   if (!user) throw new Error('Invalid credentials');
 
   const currentUser: User = { username: user.username };
@@ -50,7 +50,7 @@ export async function signup(username: string, password: string, email?: string)
   const stored = localStorage.getItem(USERS_STORAGE_KEY);
   const users = stored ? JSON.parse(stored) : [];
 
-  if (users.some((u: any) => u.username === username)) {
+  if (users.some((u: { username: string }) => u.username === username)) {
     throw new Error('Username already exists');
   }
 
@@ -69,7 +69,7 @@ export async function resetPassword(username: string | undefined, newPassword: s
   const stored = localStorage.getItem(USERS_STORAGE_KEY);
   const users = stored ? JSON.parse(stored) : [];
 
-  const userIndex = users.findIndex((u: any) =>
+  const userIndex = users.findIndex((u: { username: string; email?: string }) =>
     (username && u.username === username) || (email && u.email === email)
   );
 

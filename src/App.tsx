@@ -21,7 +21,7 @@ export default function App() {
           const t = await loadTasks();
           setTasks(t);
         }
-      } catch (err) {
+      } catch {
         // ignore
       } finally {
         setLoading(false);
@@ -33,7 +33,7 @@ export default function App() {
     try {
       const savedTask = await saveTask(task);
       setTasks(prev => [...prev, savedTask]);
-    } catch (err) {
+    } catch {
       setError('Failed to add task');
     }
   };
@@ -44,7 +44,7 @@ export default function App() {
       setTasks(prev =>
         prev.map(task => (task.id === updatedTask.id ? updatedTask : task))
       );
-    } catch (err) {
+    } catch {
       setError('Failed to update task');
     }
   };
@@ -53,7 +53,7 @@ export default function App() {
     try {
       await deleteTaskFromStorage(taskId);
       setTasks(prev => prev.filter(task => task.id !== taskId));
-    } catch (err) {
+    } catch {
       setError('Failed to delete task');
     }
   };
