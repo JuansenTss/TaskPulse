@@ -15,8 +15,11 @@ const initDemoUsers = () => {
   }
 };
 
-export async function login(username: string, password: string): Promise<User> {
+export async function login(username: string, password: string, rememberMe?: boolean): Promise<User> {
   initDemoUsers();
+
+  // rememberMe is accepted but not used in demo mode
+  void rememberMe;
 
   const stored = localStorage.getItem(USERS_STORAGE_KEY);
   const users = stored ? JSON.parse(stored) : [];
